@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from slack_bolt import App
 from slack_bolt.oauth.oauth_settings import OAuthSettings
 from slack_sdk.oauth.installation_store.sqlalchemy import SQLAlchemyInstallationStore
+from slack_sdk.errors import SlackApiError
 
 
 # Env vars
@@ -61,7 +62,12 @@ def double_crux(client, ack, say, command):
     )
     return
 
-  say(f"Starting a new double crux session between {participant_a} and {participant_b}...")
+  try:
+    say(f"Starting a new double crux session between {participant_a} and {participant_b}...")
+  except SlackApiError as e:
+    print(f"Received SlackApiError when starting a new session: {e}")
+    return
+  
   if DEBUG_MODE and len(params) > 2:
     # If there was a third parameter, and it's a number, use it as the message time limit
     # If it's text, use it as optional initial instructions
