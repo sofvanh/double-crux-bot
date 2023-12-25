@@ -1,6 +1,6 @@
 import os
-from facilitator import Facilitator
-from app_state import app_state, ChannelState
+from .facilitator import Facilitator
+from .app_state import app_state, ChannelState
 from sqlalchemy import create_engine
 from slack_bolt import App
 from slack_bolt.oauth.oauth_settings import OAuthSettings

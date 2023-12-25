@@ -1,2 +1,2 @@
-web: cd app && python3 app.py
-web: cd app && python3 discord_bot.py
+web: python -m app.slack_bot
+web: python -m app.discord_bot

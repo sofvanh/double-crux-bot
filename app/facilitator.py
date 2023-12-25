@@ -3,7 +3,7 @@ import time
 import langchain
 from interlab import actor
 import openai
-from instructions import ChatbotAction, DiscussionFlow, get_initial_bot_instructions, get_bot_instruction, bot_instructions
+from .instructions import ChatbotAction, DiscussionFlow, get_initial_bot_instructions, get_bot_instruction, bot_instructions
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
