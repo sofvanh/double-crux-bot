@@ -1,6 +1,7 @@
 import os
 from .facilitator import Facilitator
 from .app_state import app_state, ChannelState
+from .message_sender import SyncMessageSender
 from sqlalchemy import create_engine
 from slack_bolt import App
 from slack_bolt.oauth.oauth_settings import OAuthSettings
@@ -47,7 +48,8 @@ def double_crux(client, ack, say, command):
   if channel_id in app_state.channel_states:
     app_state.channel_states[channel_id].bot = None # End any existing session
   
-  channel_state = ChannelState()
+  sync_message_sender = SyncMessageSender(say)
+  channel_state = ChannelState(sync_message_sender)
   app_state.channel_states[channel_id] = channel_state
   params = command['text'].split(',')
   params = [param.strip() for param in params]
@@ -88,7 +90,7 @@ def double_crux(client, ack, say, command):
 
 # Handle incoming messages
 @app.event("message")
-def handle_message(client, event, say):
+def handle_message(client, event):
   # Ignore thread messages, edit updates, "member joined" etc.
   is_thread = 'thread_ts' in event and event['thread_ts'] != event['ts']
   is_system_message = 'subtype' in event
@@ -109,7 +111,7 @@ def handle_message(client, event, say):
   user_info = client.users_info(user=event['user'])
   user_name = user_info['user']['profile'].get('display_name') or user_info['user']['profile'].get('real_name') or user_info['user']['name']
   message = event['text']
-  channel_state.handle_message(user_name, message, say)
+  channel_state.handle_message(user_name, message)
 
 
 # Handle @-mentions of the bot
