@@ -79,6 +79,7 @@ class ChannelState:
     self.generation_in_progress = False
       
 
+# TODO Conversation states should be stored in a database so that we don't lose them every time the bot restarts
 class AppState:
   def __init__(self):
     self.channel_states = {}  # key: channel_id, value: ChannelState

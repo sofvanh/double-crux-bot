@@ -61,6 +61,7 @@ def double_crux(client, ack, say, command):
   else:
     ack()
 
+  # TODO User should @tag the users involved instead of writing their names
   params = command['text'].split(',')
   params = [param.strip() for param in params]
   try:
@@ -74,6 +75,7 @@ def double_crux(client, ack, say, command):
     )
     return
 
+  print(f"Starting a new double crux in Slack: {command}")
   say(f"Starting a new double crux session between {participant_a} and {participant_b}...")
   
   if channel_id in app_state.channel_states:

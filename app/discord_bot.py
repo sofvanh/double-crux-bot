@@ -53,9 +53,8 @@ async def doublecrux(interaction: discord.Interaction, member1: discord.Member, 
     app_state.channel_states[interaction.channel_id] = channel_state
     channel_state.bot = Facilitator(member1.display_name, member2.display_name)
 
-    # Send a message to the channel to indicate the session has started
+    print(f"Starting a new double crux in Discord: {interaction}")
     await interaction.response.send_message(f"Starting a new double crux session between {member1.display_name} and {member2.display_name}...")
-
     await asyncio.to_thread(channel_state.send_response)
 
 
