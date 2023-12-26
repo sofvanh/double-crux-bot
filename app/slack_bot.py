@@ -30,7 +30,17 @@ app = App(
   oauth_settings=OAuthSettings(
     client_id=os.environ.get("SLACK_CLIENT_ID"),
     client_secret=os.environ.get("SLACK_CLIENT_SECRET"),
-    scopes=["app_mentions:read", "channels:history", "chat:write", "commands", "users:read", "groups:history", "mpim:history"],
+    scopes=["app_mentions:read",
+            "channels:history",
+            "channels:read",
+            "chat:write",
+            "commands",
+            "users:read",
+            "groups:history",
+            "groups:read",
+            "mpim:history",
+            "mpim:read",
+            "im:read"],
     installation_store=store
     # TODO Add state store
   )
@@ -40,17 +50,17 @@ app = App(
 # Start a double crux session, for the people mentioned
 @app.command("/doublecrux")
 def double_crux(client, ack, say, command):
-  ack()
   if DEBUG_MODE:
     print(command)
 
   channel_id = command['channel_id']
-  if channel_id in app_state.channel_states:
-    app_state.channel_states[channel_id].bot = None # End any existing session
-  
-  sync_message_sender = SyncMessageSender(say)
-  channel_state = ChannelState(sync_message_sender)
-  app_state.channel_states[channel_id] = channel_state
+  channel_info = client.conversations_info(channel=channel_id)
+  if not channel_info['channel']['is_member']:
+    ack("Sorry, I don't have access to this channel! Add me via the Integrations menu, or by pinging me with @Harmony")
+    return
+  else:
+    ack()
+
   params = command['text'].split(',')
   params = [param.strip() for param in params]
   try:
@@ -64,11 +74,13 @@ def double_crux(client, ack, say, command):
     )
     return
 
-  try:
-    say(f"Starting a new double crux session between {participant_a} and {participant_b}...")
-  except SlackApiError as e:
-    print(f"Received SlackApiError when starting a new session: {e}")
-    return
+  say(f"Starting a new double crux session between {participant_a} and {participant_b}...")
+  
+  if channel_id in app_state.channel_states:
+    app_state.channel_states[channel_id].bot = None # End any existing session
+  sync_message_sender = SyncMessageSender(say)
+  channel_state = ChannelState(sync_message_sender)
+  app_state.channel_states[channel_id] = channel_state
   
   if DEBUG_MODE and len(params) > 2:
     # If there was a third parameter, and it's a number, use it as the message time limit
@@ -121,7 +133,7 @@ def handle_message(client, event, say):
 @app.event("app_mention")
 def handle_app_mention(client, event, say):
   # TODO Be useful (maybe send an ephemeral message about how to start a new conversation)
-  say("Did someone call me?")
+  say("Hi there!")
 
 
 if __name__ == "__main__":
