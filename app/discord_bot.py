@@ -39,8 +39,6 @@ async def on_ready():
 @tree.command(name='doublecrux', description='Start a new double crux session', guild=test_guild)
 @app_commands.describe(member1='The first participant of the double crux', member2='The second participant of the double crux')
 async def doublecrux(interaction: discord.Interaction, member1: discord.Member, member2: discord.Member):
-    print("In /doublecrux")
-
     channel = client.get_channel(interaction.channel_id)
     if channel is None or not channel.permissions_for(interaction.guild.me).send_messages:
         await interaction.response.send_message("The bot is not present or does not have permission to send messages in this channel.", ephemeral=True)
@@ -63,7 +61,6 @@ async def doublecrux(interaction: discord.Interaction, member1: discord.Member, 
 
 @client.event
 async def on_message(message):
-    print("Received new message")
     # Ignore messages from the bot itself or system messages
     if message.author == client.user or message.type != discord.MessageType.default:
         return

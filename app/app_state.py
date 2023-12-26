@@ -1,6 +1,10 @@
+import os
 import time
 from threading import Timer
 from .message_sender import MessageSender
+
+
+DEBUG_MODE = os.environ.get("DEBUG_MODE", "false").lower() == "true"
 
 
 class ChannelState:
@@ -35,17 +39,22 @@ class ChannelState:
     self.bot.process_message(user_name, message)
     if self.generation_in_progress:
       if self.response_delay_timer and self.response_delay_timer.is_alive():
-        print("Generation is already in progress, but response delay timer is running, skipping...")
+        if DEBUG_MODE:
+          print("Generation is already in progress, but response delay timer is running, skipping...")
       else:
-        print("Generation is already in progress, starting a response delay timer...")
+        if DEBUG_MODE:
+          print("Generation is already in progress, starting a response delay timer...")
         self.start_response_delay_timer()
     elif time.time() - self.last_message_time > self.min_time_between_messages:
-      print("Message time limit has passed, sending response...")
+      if DEBUG_MODE:
+        print("Message time limit has passed, sending response...")
       self.send_response()
     elif self.rate_limit_timer and self.rate_limit_timer.is_alive():
-      print(f"Message time limit has not passed, but response timer is running, skipping...")
+      if DEBUG_MODE:
+        print(f"Message time limit has not passed, but response timer is running, skipping...")
     else:
-      print("Starting timer to send response...")
+      if DEBUG_MODE:
+        print("Starting timer to send response...")
       self.start_rate_limit_timer()
     
   def send_response(self, optional_instructions = ''):
@@ -59,9 +68,11 @@ class ChannelState:
       self.last_message_time = time.time()
     else:
       if self.rate_limit_timer and self.rate_limit_timer.is_alive():
-        print(f"Decided not to answer. Response timer is running, skipping...")
+        if DEBUG_MODE:
+          print(f"Decided not to answer. Response timer is running, skipping...")
       else:
-        print("Decided not to answer, starting a max wait timer...")
+        if DEBUG_MODE:
+          print("Decided not to answer, starting a max wait timer...")
         self.start_response_delay_timer()
     if self.bot.conversation_ended():
       self.message_sender.send("_Feel free to continue the discussion with the bot. If you want to start a new discussion, type '/doublecrux name 1, name 2'._")

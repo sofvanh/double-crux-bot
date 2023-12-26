@@ -95,18 +95,21 @@ def handle_message(client, event, say):
   is_thread = 'thread_ts' in event and event['thread_ts'] != event['ts']
   is_system_message = 'subtype' in event
   if is_thread or is_system_message:
-    print("Received an event that wasn't a plain channel message, skipping...")
+    if DEBUG_MODE:
+      print("Received an event that wasn't a plain channel message, skipping...")
     return
 
   # Bot hasn't been initialized / no active double crux session
   channel_id = event['channel']
   if (channel_id not in app_state.channel_states or app_state.channel_states[channel_id].bot is None):
-    print("Received a new message, but no live bot found")
+    if DEBUG_MODE:
+      print("Received a new message, but no live bot found")
     say("Please start a double crux session first with [/doublecrux name1, name2]")
     return
   
   # Process the message
-  print("Received new message")
+  if DEBUG_MODE:
+    print("Received new message")
   channel_state = app_state.channel_states[channel_id]
   user_info = client.users_info(user=event['user'])
   user_name = user_info['user']['profile'].get('display_name') or user_info['user']['profile'].get('real_name') or user_info['user']['name']

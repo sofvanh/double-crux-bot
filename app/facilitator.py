@@ -29,7 +29,8 @@ class Facilitator:
 
   def process_message(self, speaker, message):
     # Process a new message by adding it to the chat history and updating the bot's state
-    print(f"Processing message from {speaker}")
+    if DEBUG_MODE:
+      print(f"Processing message from {speaker}")
     self.bot.observe(f'{speaker}: {message}')
 
   def generate_response(self, optional_instructions = ''):
@@ -37,10 +38,9 @@ class Facilitator:
     self.update_step()
 
     # Perform conversation analysis and generate a response to the conversation
-    print("Generating response...")
     message = get_bot_instruction(self.step, self.substep, self.name_a, self.name_b, optional_instructions) 
     if DEBUG_MODE:
-      print(f"Message: {message}")
+      print(f"Generating new response. Message: {message}")
     chatbotAction = self.act(message = message, expected_type = ChatbotAction)
     assert isinstance(chatbotAction, ChatbotAction)
     if DEBUG_MODE:
@@ -53,11 +53,13 @@ class Facilitator:
       self.substep += 1
       return reply
     else:
-      print("No reply needed")
+      if DEBUG_MODE:
+        print("No reply needed")
       return None
 
   def update_step(self):
-    print("Analyzing conversation state")
+    if DEBUG_MODE:
+      print("Analyzing conversation state")
     if (self.substep == len(bot_instructions.get(self.step))):
       # Identify the next step in the conversation
       discussionFlowAction = self.act(expected_type = DiscussionFlow)
