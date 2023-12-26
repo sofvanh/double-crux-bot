@@ -56,7 +56,7 @@ async def doublecrux(interaction: discord.Interaction, member1: discord.Member, 
     # Send a message to the channel to indicate the session has started
     await interaction.response.send_message(f"Starting a new double crux session between {member1.display_name} and {member2.display_name}...")
 
-    channel_state.send_response()
+    await asyncio.to_thread(channel_state.send_response)
 
 
 @client.event
@@ -75,7 +75,7 @@ async def on_message(message):
     channel_state = app_state.channel_states[channel_id]
     user_name = message.author.display_name
     message_content = message.content
-    channel_state.handle_message(user_name, message_content)
+    await asyncio.to_thread(channel_state.handle_message, user_name, message_content)
 
 
 client.run(DISCORD_BOT_TOKEN)
