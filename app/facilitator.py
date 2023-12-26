@@ -5,6 +5,8 @@ from interlab import actor
 import openai
 from .instructions import ChatbotAction, DiscussionFlow, get_initial_bot_instructions, get_bot_instruction, bot_instructions
 
+
+DEBUG_MODE = os.environ.get("DEBUG_MODE", "false").lower() == "true"
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 
@@ -37,10 +39,12 @@ class Facilitator:
     # Perform conversation analysis and generate a response to the conversation
     print("Generating response...")
     message = get_bot_instruction(self.step, self.substep, self.name_a, self.name_b, optional_instructions) 
-    print(f"Message: {message}")
+    if DEBUG_MODE:
+      print(f"Message: {message}")
     chatbotAction = self.act(message = message, expected_type = ChatbotAction)
     assert isinstance(chatbotAction, ChatbotAction)
-    print(f"{chatbotAction}")
+    if DEBUG_MODE:
+      print(f"{chatbotAction}")
 
     # See if bot decided to reply
     if chatbotAction.respondee.value == "Me" or self.step == "Start":
