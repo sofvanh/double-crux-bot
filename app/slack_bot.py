@@ -85,12 +85,12 @@ def double_crux(client, ack, say, command):
   else:
     channel_state.bot = Facilitator(participant_a, participant_b)
   
-  channel_state.send_response(say)
+  channel_state.send_response()
 
 
 # Handle incoming messages
 @app.event("message")
-def handle_message(client, event):
+def handle_message(client, event, say):
   # Ignore thread messages, edit updates, "member joined" etc.
   is_thread = 'thread_ts' in event and event['thread_ts'] != event['ts']
   is_system_message = 'subtype' in event
