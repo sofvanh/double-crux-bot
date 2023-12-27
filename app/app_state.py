@@ -63,6 +63,8 @@ class ChannelState:
     self.cancel_timers()
     self.generation_in_progress = True
     response = self.bot.generate_response(optional_instructions)
+    if self.bot is None: # Need to check again in case the conversation was ended during generation
+      return
     if response is not None:
       self.message_sender.send(response)
       self.last_message_time = time.time()
