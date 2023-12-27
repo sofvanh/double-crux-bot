@@ -21,4 +21,5 @@ class AsyncMessageSender(MessageSender):
         self.loop = loop
 
     def send(self, message):
-        asyncio.run_coroutine_threadsafe(self.send_coroutine(message), self.loop)
+        asyncio.run_coroutine_threadsafe(
+            self.send_coroutine(message), self.loop)
