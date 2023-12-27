@@ -48,6 +48,18 @@ app = App(
 )
 
 
+def get_user_name(client, user_id):
+    try:
+        user_info = client.users_info(user=user_id)
+        if user_info['ok']:
+            return user_info['user']['profile'].get('display_name') or user_info['user']['profile'].get('real_name') or user_info['user']['name']
+        else:
+            return None
+    except SlackApiError as e:
+        print(f"Error fetching user name: {e}")
+        return None
+
+
 # Start a double crux session, for the people mentioned
 @app.command("/doublecrux")
 def double_crux(client, ack, say, command):
@@ -106,6 +118,21 @@ def double_crux(client, ack, say, command):
     channel_state.send_response()
 
 
+@app.command("/enddoublecrux")
+def end_double_crux(client, ack, say, command):
+    if DEBUG_MODE:
+        print(command)
+    channel_id = command['channel_id']
+    if channel_id in app_state.channel_states and app_state.channel_states[channel_id].bot:
+        ack()
+        app_state.channel_states[channel_id].bot = None
+        user_id = command['user_id']
+        user_name = get_user_name(client, user_id)
+        say(f"The double crux session has been ended by {user_name}.")
+    else:
+        ack("There is no active double crux session to end.")
+
+
 # Handle incoming messages
 @app.event("message")
 def handle_message(client, event, say):
@@ -122,17 +149,14 @@ def handle_message(client, event, say):
     if (channel_id not in app_state.channel_states or app_state.channel_states[channel_id].bot is None):
         if DEBUG_MODE:
             print("Received a new message, but no live bot found")
-        say(
-            "Please start a double crux session first with [/doublecrux name1, name2]")
         return
 
     # Process the message
     if DEBUG_MODE:
         print("Received new message")
     channel_state = app_state.channel_states[channel_id]
-    user_info = client.users_info(user=event['user'])
-    user_name = user_info['user']['profile'].get(
-        'display_name') or user_info['user']['profile'].get('real_name') or user_info['user']['name']
+    user_id = event['user']
+    user_name = get_user_name(client, user_id)
     message = event['text']
     channel_state.handle_message(user_name, message)
 
@@ -140,8 +164,13 @@ def handle_message(client, event, say):
 # Handle @-mentions of the bot
 @app.event("app_mention")
 def handle_app_mention(client, event, say):
-    # TODO Be useful (maybe send an ephemeral message about how to start a new conversation)
-    say("Hi there!")
+    channel_id = event['channel']
+    user_id = event['user']
+    client.chat_postEphemeral(
+        channel=channel_id,
+        user=user_id,
+        text="Hi! To start a new double crux session, use the command `/doublecrux name1, name2`."
+    )
 
 
 if __name__ == "__main__":
