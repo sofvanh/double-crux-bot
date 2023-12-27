@@ -33,14 +33,14 @@ def get_initial_bot_instructions(name_a, name_b):
   Double-crux discussions differ from typical debates which are usually adversarial, and instead attempt to be a collaborative attempt to uncover the true underlying structure of the disagreement.\n\
   The one and only goal of the conversation is to find a double-crux, not to collect evidence, debate, persuade, or do research.\n\
   Allow participants to speak directly to one another. Your role is to offer input and steer the conversation only when necessary.\n\
-  Write messages concicely, using bullet points when appropriate.\n\
   The key conversational moves of a double crux conversation are:\n\
   Finding a single crux:\n\
   -Checking for understanding of {name_a}\'s point.\n\
   -Checking if that point is a crux for {name_a}.\n\
   Finding a double crux:\n\
   -Checking {name_b}\'s belief about {name_a}\'s crux.\n\
-  -Checking if {name_b}\'s crux is also a crux for {name_a}'
+  -Checking if {name_b}\'s crux is also a crux for {name_a}.\n\
+  Rules: Write extremely concisely. Write only in bullet points.'
   return initial_instructions.format(name_a = name_a, name_b = name_b)
 
 
