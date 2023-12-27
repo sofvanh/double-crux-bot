@@ -41,7 +41,7 @@ Finding a single crux:\n\
 Finding a double crux:\n\
 - Checking {name_b}\'s belief about {name_a}\'s crux.\n\
 - Checking if {name_b}\'s crux is also a crux for {name_a}.\n\
-Rules:\n\
+Rules (IMPORTANT):\n\
 - Write extremely concisely.\n\
 - Write all thoughts, instructions, and feedback in bullet points, one bullet per newline.'
     return initial_instructions.format(name_a=name_a, name_b=name_b)
@@ -74,7 +74,7 @@ class ChatbotAction:
     respondee: Reply_or_Not = Field(
         description="Who should reply next? \'Me\' if my input is needed to steer the conversation (about 80-90% of the time). \'Other\' if the participants are directly addressing each other.")
     reply: str = Field(
-        description="My thoughts, feedback, and/or instructions that will guide the conversation.")
+        description="My thoughts, feedback, and/or instructions that will guide the conversation, written as bullet points.")
 
 
 @dataclass
