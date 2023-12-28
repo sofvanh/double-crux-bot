@@ -8,6 +8,7 @@ from discord import app_commands
 
 
 # Env vars
+DEBUG_MODE = os.environ.get("DEBUG_MODE", "false").lower() == "true"
 DISCORD_BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 DISCORD_TEST_SERVER_ID = os.environ.get("DISCORD_TEST_SERVER_ID")
 
@@ -60,19 +61,36 @@ async def doublecrux(interaction: discord.Interaction, member1: discord.Member, 
     await asyncio.to_thread(channel_state.send_response)
 
 
+@tree.command(name='enddoublecrux', description='End the current double crux session', guild=test_guild)
+async def enddoublecrux(interaction: discord.Interaction):
+    channel_id = interaction.channel_id
+    if channel_id in app_state.channel_states and app_state.channel_states[channel_id].bot:
+        app_state.channel_states[channel_id].bot = None
+        user_name = interaction.user.display_name
+        await interaction.response.send_message(f"The double crux session has been ended by {user_name}.")
+    else:
+        await interaction.response.send_message("There is no active double crux session to end.", ephemeral=True)
+
+
+
 @client.event
 async def on_message(message):
     # Ignore messages from the bot itself or system messages
     if message.author == client.user or message.type != discord.MessageType.default:
+        if DEBUG_MODE:
+            print("Received an event that wasn't a plain channel message, skipping...")
         return
 
-    channel_id = message.channel.id
     # Bot hasn't been initialized / no active double crux session
+    channel_id = message.channel.id
     if channel_id not in app_state.channel_states or app_state.channel_states[channel_id].bot is None:
-        await message.channel.send("Please start a double crux session first with /doublecrux")
+        if DEBUG_MODE:
+            print("Received a new message, but no live bot found")
         return
 
     # Process the message
+    if DEBUG_MODE:
+        print("Reveived new message")
     channel_state = app_state.channel_states[channel_id]
     user_name = message.author.display_name
     message_content = message.content
