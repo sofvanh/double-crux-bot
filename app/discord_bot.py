@@ -53,11 +53,11 @@ async def doublecrux(interaction: discord.Interaction, member1: discord.Member, 
         channel.send, asyncio.get_event_loop())
     channel_state = ChannelState(async_message_sender)
     app_state.channel_states[interaction.channel_id] = channel_state
-    channel_state.bot = Facilitator(member1.display_name, member2.display_name)
+    channel_state.bot = Facilitator(member1.mention, member2.mention)
 
     print(
-        f"Starting a new double crux in Discord server '{interaction.guild.name}' between {member1.display_name} and {member2.display_name}")
-    await interaction.response.send_message(f"Starting a new double crux session between {member1.display_name} and {member2.display_name}...")
+        f"Starting a new double crux in Discord server '{interaction.guild.name}' between {member1.mention} and {member2.mention}")
+    await interaction.response.send_message(f"Starting a new double crux session between {member1.mention} and {member2.mention}...")
     await asyncio.to_thread(channel_state.send_response)
 
 
@@ -66,7 +66,7 @@ async def enddoublecrux(interaction: discord.Interaction):
     channel_id = interaction.channel_id
     if channel_id in app_state.channel_states and app_state.channel_states[channel_id].bot:
         app_state.channel_states[channel_id].bot = None
-        user_name = interaction.user.display_name
+        user_name = interaction.user.mention
         await interaction.response.send_message(f"The double crux session has been ended by {user_name}.")
     else:
         await interaction.response.send_message("There is no active double crux session to end.", ephemeral=True)
@@ -92,7 +92,7 @@ async def on_message(message):
     if DEBUG_MODE:
         print("Reveived new message")
     channel_state = app_state.channel_states[channel_id]
-    user_name = message.author.display_name
+    user_name = message.author.mention
     message_content = message.content
     await asyncio.to_thread(channel_state.handle_message, user_name, message_content)
 
