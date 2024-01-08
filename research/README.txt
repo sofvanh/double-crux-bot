@@ -19,4 +19,3 @@ e.g., "You are a CFAR instructor with expertise in double crux."
 
 Other WARNINGS:
 - please re-run the cell containing the WebConsoleModel each new conversation
-- restart the kernel every time you change the csv file containing the prompts for the bot
